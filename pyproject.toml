@@ -41,6 +41,10 @@ line-length = 100
 target-version = "py311"
 extend-include = ["*.ipynb"]
 
+[tool.ruff.format]
+# Lesson code blocks keep hand-aligned result comments.
+exclude = ["*.md"]
+
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "N", "SIM", "NPY", "RUF"]
 # Greek-letter math names (W, A, C) mirror the paper notation.
