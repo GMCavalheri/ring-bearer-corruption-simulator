@@ -33,6 +33,7 @@ Only commands verified to work. Update this table when a command changes.
 ## Non-obvious gotchas
 
 - `uv sync` fails if `README.md` is missing, because hatchling validates the `readme` field.
+- `astral-sh/setup-uv` publishes no moving major tag (`@v10` fails to resolve). Pin the full version, e.g. `@v10.3.2`; dependabot bumps it.
 - `pip-audit` on the live environment flags the local package as "not on PyPI". Audit the exported lock (`uv export --no-emit-project`) instead.
 
 ## Never do in this repo
