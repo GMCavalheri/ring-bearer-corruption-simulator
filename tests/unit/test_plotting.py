@@ -46,3 +46,21 @@ def test_plot_fate_map_has_colorbar_and_boundary() -> None:
     labels = [line.get_label() for line in fig.axes[0].get_lines()]
     assert "fate boundary A_f(β)" in labels
     plt.close(fig)
+
+
+def test_stochastic_plots_build() -> None:
+    import numpy as np
+
+    from corruption.plotting import plot_fall_time_distribution, plot_sample_paths
+    from corruption.stochastic import MonteCarloResult
+
+    t = np.linspace(0, 10, 11)
+    fig = plot_sample_paths(t, np.zeros((11, 3)), c_star=0.9)
+    assert len(fig.axes[0].get_lines()) == 4
+    plt.close(fig)
+    result = MonteCarloResult(fall_time=np.array([1.0, 2.0, np.inf]), horizon=10.0)
+    fig = plot_fall_time_distribution(result)
+    assert len(fig.axes) == 2
+    plt.close(fig)
+    empty = MonteCarloResult(fall_time=np.array([np.inf]), horizon=10.0)
+    plt.close(plot_fall_time_distribution(empty))

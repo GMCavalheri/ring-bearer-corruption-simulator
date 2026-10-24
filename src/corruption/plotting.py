@@ -11,6 +11,7 @@ from matplotlib.figure import Figure
 
 from corruption.bifurcation import Sweep, fate_boundary_ambition, fixed_point
 from corruption.model import BearerParams, FloatArray, Trajectory, critical_ambition
+from corruption.stochastic import MonteCarloResult
 
 
 def plot_trajectories(
@@ -100,4 +101,56 @@ def plot_fate_map(result: Sweep, base: BearerParams, u: float = 1.0) -> Figure:
         title=f"Time to fall (W = {base.W:g}, C0 = {base.c0:g})",
     )
     ax.legend(loc="upper right", fontsize=9)
+    return fig
+
+
+def plot_sample_paths(
+    t: FloatArray, paths: FloatArray, c_star: float, *, title: str = "Sample paths"
+) -> Figure:
+    """Stochastic C(t) paths, one thin line per bearer."""
+    fig, ax = plt.subplots(figsize=(9, 5), layout="constrained")
+    ax.plot(t, paths, lw=0.8, alpha=0.7)
+    ax.axhline(c_star, color="0.3", ls="--", lw=1, label="C* (fall)")
+    ax.set(xlabel="years of ring use", ylabel="corruption C", ylim=(0, 1), title=title)
+    ax.legend(loc="upper left", frameon=False)
+    ax.grid(alpha=0.3)
+    return fig
+
+
+def plot_fall_time_distribution(
+    result: MonteCarloResult, *, title: str = "Time to fall", bins: int = 60
+) -> Figure:
+    """Histogram of fall times next to the empirical CDF, with censoring noted."""
+    fell = result.fall_time[result.fell]
+    fig, (ax_hist, ax_cdf) = plt.subplots(1, 2, figsize=(11, 4.5), layout="constrained")
+    ax_hist.hist(fell, bins=bins, color="#7a1f3d", alpha=0.85)
+    if fell.size:
+        ax_hist.axvline(
+            float(np.median(fell)),
+            color="black",
+            ls="--",
+            lw=1,
+            label=f"median {np.median(fell):.1f} y",
+        )
+        ax_hist.legend(frameon=False)
+    ax_hist.set(xlabel="years until the fall", ylabel="bearers", title=title)
+    ordered = np.sort(fell)
+    ecdf = np.arange(1, ordered.size + 1) / len(result.fall_time)
+    ax_cdf.step(ordered, ecdf, where="post", color="#7a1f3d")
+    ax_cdf.axhline(
+        result.fraction_fallen,
+        color="0.4",
+        ls=":",
+        lw=1,
+        label=f"{result.fraction_fallen:.1%} fallen by {result.horizon:g} y",
+    )
+    ax_cdf.set(
+        xlabel="years",
+        ylabel="fraction fallen",
+        ylim=(0, 1.02),
+        title="Empirical CDF (censored at the horizon)",
+    )
+    ax_cdf.legend(loc="lower right", frameon=False)
+    for ax in (ax_hist, ax_cdf):
+        ax.grid(alpha=0.3)
     return fig
