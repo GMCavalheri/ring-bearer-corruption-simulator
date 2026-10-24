@@ -24,7 +24,13 @@ from dataclasses import dataclass
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
-from corruption.model import BearerParams, FloatArray, ParameterError, critical_ambition
+from corruption.model import (
+    BearerParams,
+    FloatArray,
+    ParameterError,
+    critical_ambition,
+    fall_time_from_coefficients,
+)
 
 __all__ = [
     "Sweep",
@@ -106,14 +112,9 @@ def sweep(
     a = drive * beta_grid + restore
     b = drive - restore
     c_u = fixed_point(base, A_grid, beta_grid, u)
-    falls = np.where(a > 0, base.c0 > c_u, b > 0)
+    falls = a * base.c0 + b > 0
 
     fall_time = np.full(A_grid.shape, np.inf)
-    exp_mask = falls & (a > 0)
-    fall_time[exp_mask] = (
-        np.log((base.c_star - c_u[exp_mask]) / (base.c0 - c_u[exp_mask])) / a[exp_mask]
-    )
-    lin_mask = falls & (a == 0)
-    fall_time[lin_mask] = (base.c_star - base.c0) / b[lin_mask]
+    fall_time[falls] = fall_time_from_coefficients(a[falls], b[falls], base.c0, base.c_star)
 
     return Sweep(A=A_axis, beta=beta_axis, fixed_point=c_u, falls=falls, fall_time=fall_time)

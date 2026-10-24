@@ -40,6 +40,8 @@ Only commands verified to work. Update this table when a command changes.
 - `gitleaks-action` on pull requests needs `pull-requests: read` to list PR commits; without it the security job fails with 403.
 - Monte Carlo parallelism uses processes, not threads: the Euler–Maruyama loop is many small NumPy calls, and threads ran 2.5x slower than serial because of the GIL.
 - Monte Carlo results depend on `BLOCK_SIZE` in `stochastic.py` (each block owns a seed stream). Changing it changes every seeded result.
+- Never form C_u = −b/a to compute fall times: it overflows for tiny W or a subnormal C0. Use `fall_time_from_coefficients` (log-difference form) and decide fate from the sign of a·C0 + b. Hypothesis found both cases.
+- When piping test output (`pytest | tail`), run `set -o pipefail` first, or a failure exits 0.
 - `pip-audit` on the live environment flags the local package as "not on PyPI". Audit the exported lock (`uv export --no-emit-project`) instead.
 
 ## Never do in this repo

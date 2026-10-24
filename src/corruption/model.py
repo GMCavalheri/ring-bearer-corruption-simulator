@@ -154,13 +154,12 @@ def critical_ambition(p: BearerParams, u: float = 1.0) -> float:
 
 def fate(p: BearerParams, u: float = 1.0) -> Fate:
     """Long-run fate under constant usage, from the position of C0 against C_u."""
+    # C0 > C_u  <=>  a·C0 + b > 0 (a ≥ 0), which avoids dividing by a tiny a.
     a, b = drift_coefficients(p, u)
-    if a == 0.0:
-        return Fate.FALLS if b > 0 else Fate.BALANCED
-    c_u = -b / a
-    if p.c0 > c_u:
+    initial_speed = a * p.c0 + b
+    if initial_speed > 0:
         return Fate.FALLS
-    if p.c0 < c_u:
+    if initial_speed < 0:
         return Fate.RESISTS
     return Fate.BALANCED
 
@@ -180,15 +179,33 @@ def analytic_solution(p: BearerParams, t: FloatArray | float, u: float = 1.0) ->
     return np.maximum(c, 0.0)
 
 
+def fall_time_from_coefficients(
+    a: FloatArray | float, b: FloatArray | float, c0: float, c_star: float
+) -> FloatArray:
+    """Time for dC/dt = a·C + b to climb from C0 to C*, assuming a·C0 + b > 0.
+
+    Uses t = [ln(a·C* + b) − ln(a·C0 + b)] / a, which equals the textbook
+    ln((C* − C_u)/(C0 − C_u))/a without forming C_u = −b/a (it overflows when a
+    is tiny). When a·(C* − C0)/(a·C0 + b) is negligible the growth is linear and
+    t = (C* − C0)/(a·C0 + b).
+    """
+    a_arr = np.asarray(a, dtype=np.float64)
+    b_arr = np.asarray(b, dtype=np.float64)
+    speed0 = a_arr * c0 + b_arr
+    speed_star = a_arr * c_star + b_arr
+    with np.errstate(divide="ignore", invalid="ignore", over="ignore"):
+        linear_time = (c_star - c0) / speed0
+        log_time = (np.log(speed_star) - np.log(speed0)) / np.where(a_arr > 0, a_arr, 1.0)
+        exponential = a_arr * (c_star - c0) > 1e-12 * speed0
+    return np.asarray(np.where(exponential, log_time, linear_time), dtype=np.float64)
+
+
 def analytic_fall_time(p: BearerParams, u: float = 1.0) -> float:
     """Closed-form time at which C reaches C*, or `inf` if the bearer never falls."""
     if fate(p, u) is not Fate.FALLS:
         return math.inf
     a, b = drift_coefficients(p, u)
-    if a == 0.0:
-        return (p.c_star - p.c0) / b
-    c_u = -b / a
-    return math.log((p.c_star - c_u) / (p.c0 - c_u)) / a
+    return float(fall_time_from_coefficients(a, b, p.c0, p.c_star))
 
 
 def simulate(

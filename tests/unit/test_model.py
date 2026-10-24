@@ -209,3 +209,25 @@ def test_more_ambition_never_delays_the_fall(p: BearerParams, extra: float) -> N
 def test_more_will_never_hastens_the_fall(p: BearerParams, extra: float) -> None:
     stronger = BearerParams(W=p.W + extra, A=p.A, beta=p.beta, c0=p.c0)
     assert analytic_fall_time(stronger) >= analytic_fall_time(p)
+
+
+def test_fall_time_stays_finite_when_will_is_subnormal() -> None:
+    # Regression: C_u = -b/a overflowed to -inf and the old formula gave nan.
+    p = BearerParams(W=5e-324, A=0.5, beta=0.0)
+    expected = BearerParams(W=0.0, A=0.5, beta=0.0)
+    assert fate(p) is Fate.FALLS
+    assert analytic_fall_time(p) == pytest.approx(analytic_fall_time(expected))
+
+
+def test_fall_time_formula_matches_the_log_form() -> None:
+    a, b = drift_coefficients(FALLER)
+    c_u = -b / a
+    log_form = math.log((FALLER.c_star - c_u) / (FALLER.c0 - c_u)) / a
+    assert analytic_fall_time(FALLER) == pytest.approx(log_form, rel=1e-12)
+
+
+def test_fall_time_stays_finite_for_a_subnormal_start_above_the_fixed_point() -> None:
+    # Regression: C0 = 2e-309 just above C_u = 0 overflowed the linear time.
+    p = BearerParams(W=0.5, A=0.5, beta=0.0, c0=2.225073858507203e-309)
+    a, _ = drift_coefficients(p)
+    assert analytic_fall_time(p) == pytest.approx((math.log(p.c_star) - math.log(p.c0)) / a)
