@@ -212,8 +212,11 @@ def test_more_will_never_hastens_the_fall(p: BearerParams, extra: float) -> None
 
 
 def test_fall_time_stays_finite_when_will_is_subnormal() -> None:
-    # Regression: C_u = -b/a overflowed to -inf and the old formula gave nan.
-    p = BearerParams(W=5e-324, A=0.5, beta=0.0)
+    # Regression: with gamma*W a nonzero subnormal, C_u = -b/a overflowed to -inf and the old
+    # formula gave nan. W must keep gamma*W above zero: 5e-324 underflows to a = 0 and takes the
+    # linear branch, which never had the bug.
+    p = BearerParams(W=2.2250738585e-313, A=0.5, beta=0.0)
+    assert p.gamma * p.W > 0.0
     expected = BearerParams(W=0.0, A=0.5, beta=0.0)
     assert fate(p) is Fate.FALLS
     assert analytic_fall_time(p) == pytest.approx(analytic_fall_time(expected))
