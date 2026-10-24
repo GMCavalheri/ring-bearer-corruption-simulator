@@ -4,7 +4,7 @@
 
 **How long does a bearer resist before becoming a wraith, and which small changes in character alter their whole fate?**
 
-Project 1 of the **Dark Lord Systems** series: ten projects that each model the same Tolkien idea, power as control over wills, with a different technique. This one uses ODE and SDE modeling, bifurcation analysis, Monte Carlo simulation and survival analysis.
+Project 1 of the **Dark Lord Systems** series: sixteen projects that each model the same Tolkien idea, power as control over wills, with a different technique. This one uses ODE and SDE modeling, bifurcation analysis, Monte Carlo simulation and survival analysis.
 
 **New to the subject? Start with the [six-lesson course](docs/lessons/README.md)**: ODEs, bifurcations, stochastic simulation, survival analysis and app engineering, each worked through on this project's code, with exercises and answers.
 
