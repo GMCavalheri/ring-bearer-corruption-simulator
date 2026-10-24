@@ -1,6 +1,6 @@
 # Project 1: Ring-Bearer Corruption Simulator
 
-> Part of the **Dark Lord Systems** series: 10 projects that each model the same Tolkien idea, power as control over wills, with a different technique. This file is self-contained.
+> Part of the **Dark Lord Systems** series: 16 projects that each model the same Tolkien idea, power as control over wills, with a different technique. This file is self-contained.
 
 - **Technique:** ODE and SDE modeling, bifurcation analysis, Monte Carlo, survival analysis
 - **Duration:** 3 weeks (part-time)
