@@ -6,6 +6,8 @@
 
 Project 1 of the **Dark Lord Systems** series: ten projects that each model the same Tolkien idea, power as control over wills, with a different technique. This one uses ODE and SDE modeling, bifurcation analysis, Monte Carlo simulation and survival analysis.
 
+**New to the subject? Start with the [six-lesson course](docs/lessons/README.md)**: ODEs, bifurcations, stochastic simulation, survival analysis and app engineering, each worked through on this project's code, with exercises and answers.
+
 Lore basis: the bearers of the Nine fell one by one, according to their native strength and initial intent ([Tolkien Forum](https://thetolkien.forum/threads/the-early-work-of-the-nine-rings.16421/)); the Dwarves did not submit ([Wikipedia](https://en.wikipedia.org/wiki/Sauron)).
 
 ![The Nine fall one by one](docs/figures/nine_bearers.png)
@@ -153,7 +155,7 @@ tests/scenario/       # solver agreement, parallel determinism, noise limits
 tests/app/            # Streamlit AppTest smoke tests
 notebooks/            # 01 deterministic, 02 bifurcation, 03 stochastic, 04 races
 app/streamlit_app.py
-docs/                 # figures, screenshots, flag registry
+docs/                 # figures, screenshots, flag registry, lessons/ (the course)
 ```
 
 `model.py` is a pure function of (W, A, α, β, γ, u(t)) with no plotting or I/O, so Project 5 (the C++ "Dark Lord" game) can port it as its bearer-corruption system.

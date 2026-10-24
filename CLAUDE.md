@@ -20,6 +20,7 @@ Models how a ring-bearer's corruption C grows under ring use, finds the point of
 - Tests: `tests/unit` (fast, pure) and `tests/scenario` (numerical scenarios: solver agreement, reproducibility, failure on bad input). Scenario tests are named after the scenario.
 - Every parameter value is an invented assumption and must appear in the README assumptions table.
 - Notebooks are committed executed (outputs included) so GitHub renders them; CI re-executes them with nbmake.
+- `docs/lessons/` is a six-lesson course, one lesson per phase plus V&V. Every number in it was computed by the package. When a default, a preset or a seeded result changes, rerun `make_figures.py` and the notebooks and update the lesson text. Relative links are checked by `tests/unit/test_docs_links.py`.
 
 ## Commands
 
@@ -36,6 +37,7 @@ Only commands verified to work. Update this table when a command changes.
 | App smoke tests (headless) | `uv run pytest tests/app` |
 | Run the app | `uv run streamlit run app/streamlit_app.py` |
 | Run the app with experimental tab | `RBCS_EXPERIMENTAL_SDE=1 uv run streamlit run app/streamlit_app.py` |
+| Lesson figures | `uv run python docs/lessons/make_figures.py` |
 | Dependency audit | `uv export --no-emit-project --all-groups --format requirements-txt -o /tmp/req.txt -q && uv run pip-audit -r /tmp/req.txt --disable-pip --strict` |
 
 ## Non-obvious gotchas
