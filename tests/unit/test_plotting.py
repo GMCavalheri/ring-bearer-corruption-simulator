@@ -64,3 +64,15 @@ def test_stochastic_plots_build() -> None:
     plt.close(fig)
     empty = MonteCarloResult(fall_time=np.array([np.inf]), horizon=10.0)
     plt.close(plot_fall_time_distribution(empty))
+
+
+def test_plot_survival_curves_draws_one_curve_per_race() -> None:
+    from corruption.plotting import plot_survival_curves
+    from corruption.races import kaplan_meier, survival_table
+    from corruption.stochastic import SDEConfig
+
+    table = survival_table(n_per_race=50, base=SDEConfig(dt=0.2, t_max=50.0), seed=1)
+    fig = plot_survival_curves(kaplan_meier(table))
+    labels = {line.get_label() for line in fig.axes[0].get_lines()}
+    assert {"Men", "Dwarves", "Elves"} <= labels
+    plt.close(fig)

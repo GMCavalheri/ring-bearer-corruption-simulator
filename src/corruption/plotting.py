@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
+from lifelines import KaplanMeierFitter
 from matplotlib.colors import LogNorm
 from matplotlib.figure import Figure
 
@@ -153,4 +154,22 @@ def plot_fall_time_distribution(
     ax_cdf.legend(loc="lower right", frameon=False)
     for ax in (ax_hist, ax_cdf):
         ax.grid(alpha=0.3)
+    return fig
+
+
+def plot_survival_curves(
+    fitters: Mapping[str, KaplanMeierFitter], *, title: str = "Survival by race"
+) -> Figure:
+    """Kaplan–Meier curves with 95% confidence bands, one per race."""
+    fig, ax = plt.subplots(figsize=(9, 5), layout="constrained")
+    for kmf in fitters.values():
+        kmf.plot_survival_function(ax=ax, ci_show=True, lw=2)
+    ax.set(
+        xlabel="years of ring use",
+        ylabel="fraction not yet fallen, S(t)",
+        ylim=(0, 1.02),
+        title=title,
+    )
+    ax.legend(frameon=False)
+    ax.grid(alpha=0.3)
     return fig

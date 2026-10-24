@@ -15,6 +15,7 @@ therefore depends only on the seed, never on how many workers run the blocks.
 from __future__ import annotations
 
 import math
+import multiprocessing
 from collections.abc import Iterator
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
@@ -194,7 +195,7 @@ def _run_block(cfg: SDEConfig, pop: Population, seed: np.random.SeedSequence) ->
 def monte_carlo(
     pop: Population,
     cfg: SDEConfig,
-    seed: int,
+    seed: int | np.random.SeedSequence,
     *,
     n_workers: int = 1,
 ) -> MonteCarloResult:
@@ -206,12 +207,19 @@ def monte_carlo(
     if n_workers < 1:
         raise ParameterError("n_workers must be at least 1")
     starts = range(0, len(pop), BLOCK_SIZE)
-    seeds = np.random.SeedSequence(seed).spawn(len(starts))
+    # Rebuild the sequence so a caller's SeedSequence is never mutated by spawn().
+    if isinstance(seed, np.random.SeedSequence):
+        root = np.random.SeedSequence(seed.entropy, spawn_key=seed.spawn_key)
+    else:
+        root = np.random.SeedSequence(seed)
+    seeds = root.spawn(len(starts))
     blocks = [pop.block(s, s + BLOCK_SIZE) for s in starts]
     run = partial(_run_block, cfg)
     if n_workers == 1:
         parts = list(map(run, blocks, seeds))
     else:
-        with ProcessPoolExecutor(max_workers=n_workers) as pool:
+        # "spawn" avoids fork() from a multi-threaded parent (BLAS, Streamlit), which can deadlock.
+        ctx = multiprocessing.get_context("spawn")
+        with ProcessPoolExecutor(max_workers=n_workers, mp_context=ctx) as pool:
             parts = list(pool.map(run, blocks, seeds))
     return MonteCarloResult(fall_time=np.concatenate(parts), horizon=cfg.t_max)
