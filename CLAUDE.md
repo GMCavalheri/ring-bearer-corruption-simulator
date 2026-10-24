@@ -37,6 +37,7 @@ Only commands verified to work. Update this table when a command changes.
 
 - `uv sync` fails if `README.md` is missing, because hatchling validates the `readme` field.
 - `astral-sh/setup-uv` publishes no moving major tag (`@v10` fails to resolve). Pin the full version, e.g. `@v10.3.2`; dependabot bumps it.
+- `gitleaks-action` on pull requests needs `pull-requests: read` to list PR commits; without it the security job fails with 403.
 - `pip-audit` on the live environment flags the local package as "not on PyPI". Audit the exported lock (`uv export --no-emit-project`) instead.
 
 ## Never do in this repo
