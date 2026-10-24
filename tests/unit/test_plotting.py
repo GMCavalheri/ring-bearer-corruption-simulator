@@ -18,3 +18,31 @@ def test_plot_trajectories_rejects_mismatched_labels() -> None:
     traj = simulate(BearerParams(W=0.5, A=0.8), t_max=10.0)
     with pytest.raises(ValueError):
         plot_trajectories([traj], ["a", "b"], c_star=0.9)
+
+
+def test_plot_bifurcation_marks_the_critical_ambition() -> None:
+    import numpy as np
+
+    from corruption.plotting import plot_bifurcation
+
+    base = BearerParams(W=0.6, A=0.5)
+    fig = plot_bifurcation(base, np.linspace(0, 1.5, 50), [0.0, 3.0])
+    labels = [line.get_label() for line in fig.axes[0].get_lines()]
+    assert any(label.startswith("A_c") for label in labels)
+    assert sum(label.startswith("C_u") for label in labels) == 2
+    plt.close(fig)
+
+
+def test_plot_fate_map_has_colorbar_and_boundary() -> None:
+    import numpy as np
+
+    from corruption.bifurcation import sweep
+    from corruption.plotting import plot_fate_map
+
+    base = BearerParams(W=0.6, A=0.5)
+    result = sweep(base, np.linspace(0, 1.5, 30), np.linspace(0, 6, 20))
+    fig = plot_fate_map(result, base)
+    assert len(fig.axes) == 2
+    labels = [line.get_label() for line in fig.axes[0].get_lines()]
+    assert "fate boundary A_f(β)" in labels
+    plt.close(fig)
