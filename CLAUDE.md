@@ -50,6 +50,7 @@ Only commands verified to work. Update this table when a command changes.
 - Streamlit only hot-reloads the app script, not `src/corruption` modules: restart the server after editing the package.
 - Plotly animations crawl when the browser tab is hidden or in the background (requestAnimationFrame throttling); that is not an app bug.
 - `tests/app` uses `streamlit.testing.v1.AppTest`, which runs the real script headless. Use it instead of mocking Streamlit.
+- lifelines is locked at 0.30.0 on purpose: 0.30.1+ require `pandas<3.0`, so uv picks 0.30.0 to allow pandas 3. Kaplan–Meier and log-rank results were checked identical under pandas 2.3.3 + lifelines 0.30.3. Its Pandas4Warning noise comes from inside lifelines.
 - `pip-audit` on the live environment flags the local package as "not on PyPI". Audit the exported lock (`uv export --no-emit-project`) instead.
 
 ## Never do in this repo
