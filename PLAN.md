@@ -97,9 +97,9 @@ app/streamlit_app.py
 
 ## Definition of done
 
-- [ ] `corruption/model.py` with tests; C(t) plotted for 9 bearers
-- [ ] Bifurcation diagram over A and β
-- [ ] SDE + Monte Carlo of 10,000 bearers with time-to-fall distribution
-- [ ] Per-race Kaplan–Meier survival curves
-- [ ] Streamlit app with W, A, β sliders and fall animation
-- [ ] README with model, assumptions and screenshots
+- [x] `corruption/model.py` with tests; C(t) plotted for 9 bearers
+- [x] Bifurcation diagram over A and β
+- [x] SDE + Monte Carlo of 10,000 bearers with time-to-fall distribution
+- [x] Per-race Kaplan–Meier survival curves
+- [x] Streamlit app with W, A, β sliders and fall animation
+- [x] README with model, assumptions and screenshots

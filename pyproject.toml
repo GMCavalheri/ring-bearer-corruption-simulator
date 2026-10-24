@@ -1,6 +1,6 @@
 [project]
 name = "ring-bearer-corruption"
-version = "0.1.0"
+version = "1.0.0"
 description = "ODE/SDE model of how ring-bearers fall: bifurcation, Monte Carlo and survival analysis."
 readme = "README.md"
 license = "MIT"

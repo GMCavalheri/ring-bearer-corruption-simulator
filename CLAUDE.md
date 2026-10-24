@@ -6,8 +6,9 @@ Models how a ring-bearer's corruption C grows under ring use, finds the point of
 
 - **Components**: pure numerical core in `src/corruption/` → notebooks in `notebooks/` and the Streamlit app in `app/` consume it. There is no database, network service or shared mutable state.
 - **Core domain operation**: integrate dC/dt = αuA(1+βC) − γW(1−C) and detect the moment C crosses C* (the fall). Lives in `src/corruption/model.py`. Invariant: C stays in [0, C*], and the numeric fall time agrees with the closed form for constant u.
-- **Modules**: `model.py` (ODE, closed form, fixed point), `bifurcation.py` (A × β sweeps), `stochastic.py` (Euler–Maruyama, Monte Carlo), `races.py` (per-race parameters, Kaplan–Meier), `plotting.py` (shared figures), `flags.py` (env-var feature flags).
-- **Delivery pipeline**: commit → push to `main` → GitHub Actions CI (lint, unit on Python 3.11–3.13, scenario, notebooks, app smoke, security). There is no deploy target; releases are git tags.
+- **Modules**: `model.py` (ODE, closed form, fixed point), `bifurcation.py` (A × β sweeps), `stochastic.py` (Euler–Maruyama, Monte Carlo), `races.py` (per-race parameters, Kaplan–Meier), `plotting.py` (Matplotlib figures for notebooks/README), `interactive.py` (Plotly figures for the app), `flags.py` (env-var feature flags).
+- **Figures**: notebooks write PNGs to `docs/figures/`; the README embeds them. Re-run a notebook after changing defaults or the README numbers go stale.
+- **Delivery pipeline**: commit → push to `main` → GitHub Actions CI (`lint`, `unit` on Python 3.11–3.13, `scenario`, `notebooks`, `app-smoke`, `security`). There is no deploy target; releases are git tags (`v1.0.0`).
 - **Feature flags**: env vars `RBCS_EXPERIMENTAL_*`, read in `src/corruption/flags.py`, registry in `docs/flags.md`.
 
 ## Conventions
@@ -18,6 +19,7 @@ Models how a ring-bearer's corruption C grows under ring use, finds the point of
 - Randomness always goes through an explicit `numpy.random.Generator` or seed argument. No global `np.random.*` calls.
 - Tests: `tests/unit` (fast, pure) and `tests/scenario` (numerical scenarios: solver agreement, reproducibility, failure on bad input). Scenario tests are named after the scenario.
 - Every parameter value is an invented assumption and must appear in the README assumptions table.
+- Notebooks are committed executed (outputs included) so GitHub renders them; CI re-executes them with nbmake.
 
 ## Commands
 
