@@ -53,6 +53,21 @@ jobs:
           name: test-reports-unit-py${{ matrix.python-version }}
           path: reports/
 
+  scenario:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.2
+        with:
+          enable-cache: true
+      - run: uv sync
+      - run: uv run pytest tests/scenario --junitxml=reports/junit-scenario.xml
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: test-reports-scenario
+          path: reports/
+
   security:
     runs-on: ubuntu-latest
     steps:

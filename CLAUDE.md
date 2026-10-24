@@ -28,6 +28,8 @@ Only commands verified to work. Update this table when a command changes.
 | Install | `uv sync` |
 | Lint / format / typecheck | `uv run ruff check . && uv run ruff format --check . && uv run mypy src` |
 | Unit tests + coverage gate | `uv run pytest tests/unit --cov=corruption` |
+| Scenario tests | `uv run pytest tests/scenario` |
+| All tests | `uv run pytest` |
 | Dependency audit | `uv export --no-emit-project --all-groups --format requirements-txt -o /tmp/req.txt -q && uv run pip-audit -r /tmp/req.txt --disable-pip --strict` |
 
 ## Non-obvious gotchas
