@@ -26,11 +26,14 @@ Only commands verified to work. Update this table when a command changes.
 | Task | Command |
 |---|---|
 | Install | `uv sync` |
-| Lint / format / typecheck | `uv run ruff check . && uv run ruff format --check . && uv run mypy src` |
+| Lint / format / typecheck | `uv run ruff check . && uv run ruff format --check . && uv run mypy src app` |
 | Unit tests + coverage gate | `uv run pytest tests/unit --cov=corruption` |
 | Scenario tests | `uv run pytest tests/scenario` |
 | All tests | `uv run pytest` |
 | Notebooks (execute all) | `uv run pytest --nbmake notebooks/` |
+| App smoke tests (headless) | `uv run pytest tests/app` |
+| Run the app | `uv run streamlit run app/streamlit_app.py` |
+| Run the app with experimental tab | `RBCS_EXPERIMENTAL_SDE=1 uv run streamlit run app/streamlit_app.py` |
 | Dependency audit | `uv export --no-emit-project --all-groups --format requirements-txt -o /tmp/req.txt -q && uv run pip-audit -r /tmp/req.txt --disable-pip --strict` |
 
 ## Non-obvious gotchas
@@ -42,6 +45,9 @@ Only commands verified to work. Update this table when a command changes.
 - Monte Carlo results depend on `BLOCK_SIZE` in `stochastic.py` (each block owns a seed stream). Changing it changes every seeded result.
 - Never form C_u = −b/a to compute fall times: it overflows for tiny W or a subnormal C0. Use `fall_time_from_coefficients` (log-difference form) and decide fate from the sign of a·C0 + b. Hypothesis found both cases.
 - When piping test output (`pytest | tail`), run `set -o pipefail` first, or a failure exits 0.
+- Streamlit only hot-reloads the app script, not `src/corruption` modules: restart the server after editing the package.
+- Plotly animations crawl when the browser tab is hidden or in the background (requestAnimationFrame throttling); that is not an app bug.
+- `tests/app` uses `streamlit.testing.v1.AppTest`, which runs the real script headless. Use it instead of mocking Streamlit.
 - `pip-audit` on the live environment flags the local package as "not on PyPI". Audit the exported lock (`uv export --no-emit-project`) instead.
 
 ## Never do in this repo

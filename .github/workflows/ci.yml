@@ -27,7 +27,7 @@ jobs:
       - run: uv sync
       - run: uv run ruff check .
       - run: uv run ruff format --check .
-      - run: uv run mypy src
+      - run: uv run mypy src app
 
   unit:
     strategy:
@@ -77,6 +77,22 @@ jobs:
           enable-cache: true
       - run: uv sync
       - run: uv run pytest --nbmake notebooks/
+
+  app-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.2
+        with:
+          enable-cache: true
+      - run: uv sync
+      - name: Run the Streamlit app headless (flag off and on)
+        run: uv run pytest tests/app --junitxml=reports/junit-app.xml
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: test-reports-app
+          path: reports/
 
   security:
     runs-on: ubuntu-latest
