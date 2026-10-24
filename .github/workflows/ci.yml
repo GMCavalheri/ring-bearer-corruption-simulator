@@ -77,6 +77,8 @@ jobs:
           enable-cache: true
       - run: uv sync
       - run: uv run pytest --nbmake notebooks/
+      - name: Lesson figures still build
+        run: uv run python docs/lessons/make_figures.py
 
   app-smoke:
     runs-on: ubuntu-latest
