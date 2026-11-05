@@ -1,5 +1,11 @@
 # Ring-Bearer Corruption Simulator
 
+<p align="center">
+  <img src="docs/figures/Image_Ring_of_Power.jpeg" width="480" alt="A plain gold ring on dark volcanic rock, with the corruption equation dC/dt = αu(t)A(1 + βC) − γW(1 − C) glowing around its band like fire.">
+  <br>
+  <sub>Cover image generated with Google Gemini. The equation on the band is this project's model.</sub>
+</p>
+
 [![CI](https://github.com/GMCavalheri/ring-bearer-corruption-simulator/actions/workflows/ci.yml/badge.svg)](https://github.com/GMCavalheri/ring-bearer-corruption-simulator/actions/workflows/ci.yml)
 
 **How long does a bearer resist before becoming a wraith, and which small changes in character alter their whole fate?**
